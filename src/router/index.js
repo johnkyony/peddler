@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import firebase from 'firebase'
 
 import Login from '@/components/Login'
+import PeddlerSignUp from '@/components/PeddlerSignUp'
 import Dashboard from '@/components/Dashboard'
 import NewEvent from '@/components/NewEvent'
 import ShowEvent from '@/components/ShowEvent'
@@ -22,6 +23,12 @@ const router = new Router({
       name: 'Login',
       component: Login
     },
+    {
+      path: '/peddlerSignUp',
+      name: 'PeddlerSignUp',
+      component: PeddlerSignUp
+    }
+    ,
     {
       path: '/dashboard',
       name: 'Dashboard',

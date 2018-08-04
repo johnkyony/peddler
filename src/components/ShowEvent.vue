@@ -3,15 +3,26 @@
       <!-- the add peddler -->
         <transition name="modal">
            <!-- Modal Structure -->
-          <div v-if="addPeddlerModal" id="modal1" class="modal">
-            <div class="modal-content">
-              <h4>Modal Header</h4>
-              <p>A bunch of text</p>
-            </div>
-            <div class="modal-footer">
-              <a href="#!" class="modal-close waves-effect waves-green btn-flat">Agree</a>
-            </div>
+        <modal v-if="showModal" @close="showModal = false">
+        <!--
+          you can use custom content here to overwrite
+          default content
+        -->
+        <h3 slot="header">Add Email of New Peddler</h3>
+          <div slot="body">
+            <form @submit.prevent>
+                 <input type="text" placeholder="Type email" v-model.trim="peddlerForm.email">
+            </form>            
           </div>
+
+          <div slot="footer">
+             <button class="btn waves-effect waves-light" @click="addPeddler" >Submit
+              <i class="material-icons right">send</i>
+            </button>
+          </div>
+             
+          
+      </modal>
         </transition>
   <div >
       <div class="col s12 m7">
@@ -29,7 +40,7 @@
         </div>
         <div class="card-action">
           <a @click="printPreview(eventDetails[0].id)">Print Ticket</a>
-          <a @click="addPeddler">Allocate Ticket</a>
+          <a @click="showPeddlerModal">Add Ticket Peddler</a>
         </div>
       </div>
     </div>
@@ -51,16 +62,24 @@
 <script>
 import {mapGetters} from 'vuex'
 import {mapState} from 'vuex'
+import modal from '@/components/Modal'
 const fb = require('../firebaseConfig.js')
 import moment from 'moment'
     export default {
         data(){
           return{
            eventDetails: [],
-           addPeddlerModal: false
+           ticketPeddlers: [],
+           peddlerForm:{
+             email: ''
+           },
+           showModal: false
 
           }
         },props:['id'],
+        components: {
+          modal
+        },
         computed: {
           ...mapGetters(['getEventById']),
           ...mapState(['currentUser'])   
@@ -89,12 +108,26 @@ import moment from 'moment'
            
             
           },
+          showPeddlerModal(){
+             this.showModal = true
+          },
           addPeddler(){
-            const instance =1
-            console.log(instance)
-             return instance.open()
+            this.showModal = false
+            const actionCodeSettings = {
+              url: 'https://https://ticketing-1bd2c.firebaseapp.com/peddlerSignUp',
+              handleCodeInApp: true,
+              iOS:{
+                bundleId: 'com.example.ios'
+              },
+              android: {
+                packageName: 'com.example.android',
+                installApp: true,
+                minimumVersion: '12'
+              }
+            }
             
-
+            fb.auth.sendSignInLinkToEmail(this.peddlerForm.email , actionCodeSettings)
+            this.peddlerForm.email = ''
           }
           
           
