@@ -16,9 +16,13 @@
           </div>
 
           <div slot="footer">
+             <button class="btn waves-effect waves-light" @click="showModal = false" >Cancel
+              <i class="material-icons left">cancel</i>
+             </button>
              <button class="btn waves-effect waves-light" @click="addPeddler" >Submit
               <i class="material-icons right">send</i>
             </button>
+            
           </div>
              
           
