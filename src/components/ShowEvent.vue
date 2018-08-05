@@ -44,18 +44,20 @@
         </div>
         <div class="card-action">
           <a @click="printPreview(eventDetails[0].id)">Print Ticket</a>
-          <a @click="showPeddlerModal">Add Ticket Peddler</a>
+          <a @click="showModal = true">Allocate Tickets </a>
         </div>
       </div>
     </div>
   </div>
     <div class="col s12 m 4">
          <ul class="collection with-header">
-        <li class="collection-header"><h4>Ticket Peddlers</h4></li>
+        <li class="collection-header"><h4>Ticket Peddlers</h4><a class="right" @click="showPeddlerModal"><i class="material-icons ">add</i></a></li>
+          <li v-if="ticketPeddlers.length" class="collection-item"></li>
+          <p v-else> Click + to add ticket peddler </p>
+        <!-- <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
         <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
         <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
-        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
-        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
+        <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li> -->
       </ul>
     </div>
  
