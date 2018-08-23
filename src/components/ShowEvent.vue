@@ -13,7 +13,7 @@
              <button class="btn waves-effect waves-light" @click="showAllocatedModal = false" >Cancel
               <i class="material-icons left">cancel</i>
              </button>
-             <button class="btn waves-effect waves-light"  >Submit
+             <button class="btn waves-effect waves-light" @click="allocateTickets" >Submit
               <i class="material-icons right">send</i>
             </button>
             
@@ -76,7 +76,7 @@
         <li class="collection-header"><h4>Ticket Peddlers</h4><a class="right" @click="showPeddlerModal"><i class="material-icons ">add</i></a></li>
           <div  v-if="eventSellers.length">
             <div v-for="sellers in eventSellers">
-              <li class="collection-item">{{sellers.name}}<a @click="showAllocatedModal = true" class="secondary-content"><i class="material-icons">send</i></a></li>
+              <li class="collection-item">{{sellers.name}}<a @click="AllocatedModal(sellers.id)" class="secondary-content"><i class="material-icons">send</i></a></li>
             </div>
             
           </div>     
@@ -107,7 +107,7 @@ import moment from 'moment'
            eventDetails: [],
            ticketPeddlers: {},
            eventSellers: [],
-           allocatedPeddler: [],
+           allocatingSellerId: '',
            allocatedTicketsAmount: '',
            peddlerForm:{
              email: '',
@@ -162,6 +162,25 @@ import moment from 'moment'
             this.$store.commit('setPeddler' , this.ticketPeddlers)
             this.$store.dispatch('addPedder')
             this.showModal = false
+          },
+          AllocatedModal(sellersId){
+            this.showAllocatedModal = true
+            this.allocatingSellerId = sellersId
+          },
+          allocateTickets(){            
+            
+            fb.ticketAllocationsCollection.add({
+              sellersId: this.allocatingSellerId,
+              eventId: this.id,
+              allocatedTickets: this.allocatedTicketsAmount,
+              userId: this.currentUser.uid
+
+            }).then( ref => {
+              this.allocatingSellerId = ''
+              this.allocatedTicketsAmount = ''
+              this.showAllocatedModal = false
+            })
+            
           }
           
         },

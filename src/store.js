@@ -48,6 +48,17 @@ fb.auth.onAuthStateChanged(user => {
         })
         store.commit('setSellers', sellersArray)
     })
+    fb.ticketAllocationsCollection.where('userId' , "==" , user.uid).onSnapshot(querySnapshot => {
+        let ticketAllocationArray = []
+
+        querySnapshot.forEach(doc => {
+            let ticketAllocation = doc.data()
+            ticketAllocation.id = doc.id
+            ticketAllocationArray.push(ticketAllocation)
+        })
+        console.log(ticketAllocationArray)
+        store.commit('setTicketAllocation' , ticketAllocationArray)
+    })
     
 })
 
@@ -58,7 +69,8 @@ export const store = new Vuex.Store({
         events: [],
         tickets: [],
         peddler: {},
-        sellers: []
+        sellers: [],
+        ticketAllocation: []
     },
     actions: {
         clearData({ commit }) {
@@ -105,6 +117,9 @@ export const store = new Vuex.Store({
         },
         setSellers(state , val){
             state.sellers = val
+        },
+        setTicketAllocation(state, val){
+            state.ticketAllocation = val
         }
     },
     getters: {
