@@ -1,5 +1,25 @@
 <template>
     <div>
+      <!-- allocate peddlers tickets -->
+      <transition name="modal">
+        <modal v-if="showAllocatedModal" @close="showAllocatedModal = false">
+          <h3 slot="header"> Allocate tickets</h3>
+            <div slot="body">
+              <form @submit.prevent>                 
+                  <input type="text" placeholder="Amount of tickets" v-model="allocatedTicketsAmount">
+              </form>
+            </div>
+             <div slot="footer">
+             <button class="btn waves-effect waves-light" @click="showAllocatedModal = false" >Cancel
+              <i class="material-icons left">cancel</i>
+             </button>
+             <button class="btn waves-effect waves-light"  >Submit
+              <i class="material-icons right">send</i>
+            </button>
+            
+          </div>
+        </modal>
+      </transition>
       <!-- the add peddler -->
         <transition name="modal">
            <!-- Modal Structure -->
@@ -11,7 +31,9 @@
         <h3 slot="header">Add Email of New Peddler</h3>
           <div slot="body">
             <form @submit.prevent>
+                 <input type="text" placeholder="Type name of peddler" v-model.trim="peddlerForm.name">
                  <input type="text" placeholder="Type email" v-model.trim="peddlerForm.email">
+                
             </form>            
           </div>
 
@@ -19,7 +41,7 @@
              <button class="btn waves-effect waves-light" @click="showModal = false" >Cancel
               <i class="material-icons left">cancel</i>
              </button>
-             <button class="btn waves-effect waves-light" @click="addPeddler" >Submit
+             <button class="btn waves-effect waves-light" @click="addPeddlers" >Submit
               <i class="material-icons right">send</i>
             </button>
             
@@ -44,7 +66,7 @@
         </div>
         <div class="card-action">
           <a @click="printPreview(eventDetails[0].id)">Print Ticket</a>
-          <a @click="showModal = true">Allocate Tickets </a>
+          <!-- <a @click="showAllocatedModal = true">Allocate Tickets </a> -->
         </div>
       </div>
     </div>
@@ -52,8 +74,16 @@
     <div class="col s12 m 4">
          <ul class="collection with-header">
         <li class="collection-header"><h4>Ticket Peddlers</h4><a class="right" @click="showPeddlerModal"><i class="material-icons ">add</i></a></li>
-          <li v-if="ticketPeddlers.length" class="collection-item"></li>
-          <p v-else> Click + to add ticket peddler </p>
+          <div  v-if="eventSellers.length">
+            <div v-for="sellers in eventSellers">
+              <li class="collection-item">{{sellers.name}}<a @click="showAllocatedModal = true" class="secondary-content"><i class="material-icons">send</i></a></li>
+            </div>
+            
+          </div>     
+          <div v-else>
+             <p > Click + to add ticket peddler </p>
+          </div>     
+         
         <!-- <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
         <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
         <li class="collection-item"><div>Alvin<a href="#!" class="secondary-content"><i class="material-icons">send</i></a></div></li>
@@ -75,11 +105,16 @@ import moment from 'moment'
         data(){
           return{
            eventDetails: [],
-           ticketPeddlers: [],
+           ticketPeddlers: {},
+           eventSellers: [],
+           allocatedPeddler: [],
+           allocatedTicketsAmount: '',
            peddlerForm:{
-             email: ''
+             email: '',
+             name: ''
            },
-           showModal: false
+           showModal: false,
+           showAllocatedModal: false
 
           }
         },props:['id'],
@@ -87,8 +122,9 @@ import moment from 'moment'
           modal
         },
         computed: {
-          ...mapGetters(['getEventById']),
-          ...mapState(['currentUser'])   
+          ...mapGetters(['getEventById','getSellersByEventId']),
+          ...mapState(['currentUser']) ,
+          
                 
          
         },
@@ -97,6 +133,8 @@ import moment from 'moment'
             return this.eventDetails.push(this.getEventById(this.id))
               
           
+        },mounted(){
+          return this.eventSellers = this.getSellersByEventId(this.id)
         },
         methods:{
           printPreview(eventId){
@@ -117,25 +155,14 @@ import moment from 'moment'
           showPeddlerModal(){
              this.showModal = true
           },
-          addPeddler(){
+          addPeddlers(){
+            this.ticketPeddlers.email = this.peddlerForm.email
+            this.ticketPeddlers.name = this.peddlerForm.name
+            this.ticketPeddlers.eventId = this.id
+            this.$store.commit('setPeddler' , this.ticketPeddlers)
+            this.$store.dispatch('addPedder')
             this.showModal = false
-            const actionCodeSettings = {
-              url: 'https://https://ticketing-1bd2c.firebaseapp.com/peddlerSignUp',
-              handleCodeInApp: true,
-              iOS:{
-                bundleId: 'com.example.ios'
-              },
-              android: {
-                packageName: 'com.example.android',
-                installApp: true,
-                minimumVersion: '12'
-              }
-            }
-            
-            fb.auth.sendSignInLinkToEmail(this.peddlerForm.email , actionCodeSettings)
-            this.peddlerForm.email = ''
           }
-          
           
         },
         filters: {

@@ -6,7 +6,7 @@ import 'firebase/firestore'
 
 const config = {
     apiKey: "AIzaSyCnb4Qdj7b7vYK3vZAUf6Udg6ePvPe0wQQ",
-    authDomain: "ticketing-1bd2c.firebaseapp.com",
+
     databaseURL: "https://ticketing-1bd2c.firebaseio.com",
     projectId: "ticketing-1bd2c",
     storageBucket: "ticketing-1bd2c.appspot.com",

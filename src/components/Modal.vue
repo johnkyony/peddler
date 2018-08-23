@@ -4,7 +4,7 @@
         <div class="modal-mask">
             <div class="modal-wrapper">
                 <div class="modal-container">
-                    <!-- modal header*  -->
+                    <!-- modal header *  -->
                     <div class="modal-header">
                           <slot name="header">
                               default header

@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { stat } from 'fs';
 const fb = require('./firebaseConfig.js')
 
 Vue.use(Vuex)
@@ -34,6 +35,20 @@ fb.auth.onAuthStateChanged(user => {
         store.commit('setTickets' , ticketsArray)
 
     })
+    fb.sellersCollection.where('userId' , "==" , user.uid ).onSnapshot(querySnapshot => {
+        let sellersArray = []
+        
+        querySnapshot.forEach(doc => {
+            
+            let seller = doc.data()
+            seller.id = doc.id
+            console.log(seller)
+            sellersArray.push(seller)
+
+        })
+        store.commit('setSellers', sellersArray)
+    })
+    
 })
 
 export const store = new Vuex.Store({
@@ -41,7 +56,9 @@ export const store = new Vuex.Store({
         currentUser: null,
         userProfile: {},
         events: [],
-        tickets: []
+        tickets: [],
+        peddler: {},
+        sellers: []
     },
     actions: {
         clearData({ commit }) {
@@ -49,12 +66,25 @@ export const store = new Vuex.Store({
             commit('setUserProfile', {})
            
         },
+        clearPeddler({commit}){
+            commit('setPeddler' , {})
+        },
         fetchUserProfile({ commit, state }) {
             fb.usersCollection.doc(state.currentUser.uid).get().then(res => {
                 commit('setUserProfile', res.data())
             }).catch(err => {
                 console.log(err)
             })
+        },
+        addPedder({commit , state}){
+            fb.sellersCollection.add({
+                userId: state.currentUser.uid,
+                name: state.peddler.name,
+                email: state.peddler.email,
+                eventId: state.peddler.eventId
+            })
+           commit('setPeddler',{})
+           
         }
     },
     mutations: {
@@ -69,6 +99,12 @@ export const store = new Vuex.Store({
         }, 
         setTickets( state , val){
             state.tickets = val
+        },
+        setPeddler(state , val){
+            state.peddler = val
+        },
+        setSellers(state , val){
+            state.sellers = val
         }
     },
     getters: {
@@ -77,6 +113,9 @@ export const store = new Vuex.Store({
         },
         getTicketById: (state) => (id) => {
             return state.tickets.find(ticket => ticket.id === id)
+        },
+        getSellersByEventId: (state) => (eventId) => {
+            return state.sellers.filter(seller => seller.eventId === eventId)
         }
 
     }
